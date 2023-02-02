@@ -1,3 +1,3 @@
 export interface NonEliminationTournamentData {
-    participants_per_match?: string;
+  participants_per_match?: string;
 }

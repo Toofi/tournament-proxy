@@ -1,12 +1,16 @@
 import { HttpService } from '@nestjs/axios/dist';
 import { Injectable } from '@nestjs/common';
-import { AxiosError, AxiosResponse } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { CreateChallongeDto } from './dto/create-challonge.dto';
 import { Tournament } from './interfaces/tournament';
+import { AxiosError } from 'axios';
 
 @Injectable()
 export class ChallongeService {
+
+  private readonly baseUrl: string = "https://api.challonge.com/v1/tournaments";
+  private readonly requestConfig: any =  { headers: {'X-Requested-With': 'XMLHttpRequest', 
+  'Accept-Encoding': "gzip,deflate,compress"} };
 
   constructor(private readonly httpService: HttpService) {}
 
@@ -16,32 +20,25 @@ export class ChallongeService {
 
   async findAllTournaments(apiKey: string): Promise<Tournament[]> {
     const { data } = await firstValueFrom(
-      this.httpService.get<Tournament[]>(`https://api.challonge.com/v1/tournaments.json?api_key=${apiKey}`, 
-      { headers: {'X-Requested-With': 'XMLHttpRequest', 
-        'Accept-Encoding': "gzip,deflate,compress"
-      }}).pipe(
-        catchError((error: AxiosError) => {
+      this.httpService.get<Tournament[]>(`${this.baseUrl}.json?api_key=${apiKey}`, this.requestConfig)
+        .pipe(catchError((error: AxiosError) => {
+          console.log(error);
           throw 'error';
         })
       )
     );
     return data;
-    const result = this.httpService.get<any>(`https://api.challonge.com/v1/tournaments.json?api_key=${apiKey}`).subscribe((result) => 
-      console.log(result.data));
-    console.log(result);
-    // const { data } = await firstValueFrom(
-    //   this.httpService.get<Cat[]>('http://localhost:3000/cats').pipe(
-    //     catchError((error: AxiosError) => {
-    //       this.logger.error(error.response.data);
-    //       throw 'An error happened!';
-    //     }),
-    //   ),
-    // );
-    //récupérer infos du résultat
-    //return les infos
   }
 
-  findOneTournament(id: number, apiKey: string) {
-    return `This action returns a #${id} challonge`;
+  async findOneTournament(tournamentId: number, apiKey: string) {
+    const { data } = await firstValueFrom(
+      this.httpService.get<Tournament[]>(`${this.baseUrl}/${tournamentId}.json?api_key=${apiKey}`, this.requestConfig)
+        .pipe(catchError((error: AxiosError) => {
+          console.log(error);
+          throw 'error';
+        })
+      )
+    );
+    return data;
   }
 }
