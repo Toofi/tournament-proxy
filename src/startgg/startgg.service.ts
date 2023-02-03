@@ -2,7 +2,8 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
-import { Sets } from './interfaces/set';
+import { Participant } from './interfaces/participant/participant';
+import { Sets } from './interfaces/set/set';
 
 @Injectable()
 export class StartggService {
@@ -14,13 +15,15 @@ export class StartggService {
   constructor(private readonly httpService: HttpService) {}
 
   async getBracket(bracketId: string) {
-    const { data } = await this.getBracketRoughData(bracketId);
-    return data;
+    let result;
+    await this.getBracketRoughData(bracketId).then(data => result = data);
+    return result;
   }
 
-  async getEntrants(bracketId: string) {
-    const { data } = await this.getBracketRoughData(bracketId);
-    return data.entities.participants;
+  async getParticipants(bracketId: string): Promise<Participant[]> {
+    let participants: Participant[] = new Array();
+    await this.getBracketRoughData(bracketId).then(data => participants = data.entities.participants);
+    return participants;
   }
 
   async getRounds(bracketId: string): Promise<Sets[]> {
@@ -33,8 +36,10 @@ export class StartggService {
   }
 
   private async getBracketRoughData(bracketId: string) {
+    //all infos :
+    //?expand[]=participants&expand[]=standings&expand[]=seeds&expand[]=entrants&expand[]=sets
     const { data } = await firstValueFrom(
-      this.httpService.get(`${this.baseUrl}/phase_group/${bracketId}?expand[]=participants&expand[]=standings&expand[]=seeds&expand[]=entrants&expand[]=sets`, this.requestConfig)
+      this.httpService.get(`${this.baseUrl}/phase_group/${bracketId}?expand[]=participants&expand[]=sets`, this.requestConfig)
       .pipe(catchError((error: AxiosError) => {
         console.log(error);
         throw 'error';
