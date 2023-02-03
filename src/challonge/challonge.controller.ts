@@ -12,15 +12,17 @@ export class ChallongeController {
     return this.challongeService.create(createChallongeDto);
   }
 
-  @Get('/tournaments/apiKey=:apiKey')
-  async findAll(@Param('apiKey') apiKey: string): Promise<Tournament[]> {
+  @Get('tournaments/apiKey=:apiKey')
+  async findAllTournaments(@Param('apiKey') apiKey: string): Promise<Tournament[]> {
     let tournaments: Tournament[];
     await this.challongeService.findAllTournaments(apiKey).then((response) => tournaments = response);
     return tournaments;
   }
 
-  @Get('/tournaments/apiKey=:apiKey/tournamentId=:tournamentId')
-  findOneTournament(@Param('apiKey') apiKey: string, @Param('tournamentId') id: string) {
-    return this.challongeService.findOneTournament(+id, apiKey);
+  @Get('tournaments/apiKey=:apiKey/tournamentId=:tournamentId')
+  async findOneTournament(@Param('apiKey') apiKey: string, @Param('tournamentId') id: string) {
+    let tournament: Tournament[];
+    await this.challongeService.findOneTournament(+id, apiKey).then((response) => tournament = response);
+    return tournament;
   }
 }

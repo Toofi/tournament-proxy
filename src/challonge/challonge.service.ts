@@ -30,7 +30,7 @@ export class ChallongeService {
     return data;
   }
 
-  async findOneTournament(tournamentId: number, apiKey: string) {
+  async findOneTournament(tournamentId: number, apiKey: string): Promise<Tournament[]> {
     const { data } = await firstValueFrom(
       this.httpService.get<Tournament[]>(`${this.baseUrl}/${tournamentId}.json?api_key=${apiKey}`, this.requestConfig)
         .pipe(catchError((error: AxiosError) => {
