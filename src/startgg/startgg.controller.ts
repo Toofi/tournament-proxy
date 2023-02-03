@@ -10,8 +10,13 @@ export class StartggController {
     return this.startggService.getBracket(bracketId);
   }
 
-  @Get('entrants/bracketId=:bracketId')
-  findEntrants(@Param('bracketId') bracketId: string) {
-    return this.startggService.getEntrants(bracketId);
+  @Get('participants/bracketId=:bracketId')
+  findParticipants(@Param('bracketId') bracketId: string) {
+    return this.startggService.getParticipants(bracketId);
+  }
+
+  @Get('rounds/bracketId=:bracketId')
+  findRounds(@Param('bracketId') bracketId: string) {
+    return this.startggService.getRounds(bracketId);
   }
 }
